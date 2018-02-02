@@ -65,8 +65,8 @@
         if (controls.left) this.rotate(-Math.PI * seconds);
         if (controls.right) this.rotate(Math.PI * seconds);
         if (controls.forward && !controls.run) this.walk(2 * seconds, map);
+        if (controls.forward && controls.run) this.walk(4 * seconds, map);
         if (controls.backward) this.walk(-2 * seconds, map);
-        if (controls.run && controls.forward) this.walk(4 * seconds, map);
       };
 
       function Map(size) {
@@ -74,6 +74,7 @@
         this.wallGrid = new Uint8Array(size * size);
         this.skybox = new Bitmap('assets/deathvalley_panorama.jpg', 2000, 750);
         this.wallTexture = new Bitmap('assets/wall_texture.jpg', 1024, 1024);
+        this.floorTexture = new Bitmap('assets/floor1.gif', 128, 128);
         this.light = 0;
       }
 
@@ -144,8 +145,8 @@
         this.resolution = resolution;
         this.spacing = this.width / resolution;
         this.focalLength = focalLength || 0.8;
-        this.range = MOBILE ? 8 : 14;
-        this.lightRange = 5;
+        this.range = MOBILE ? 8 : 16;
+        this.lightRange = 10;
         this.scale = (this.width + this.height) / 1200;
       }
 
@@ -191,6 +192,14 @@
         this.ctx.drawImage(weapon.image, left, top, weapon.width * this.scale, weapon.height * this.scale);
       };
 
+      Camera.prototype.drawFloor = function(floor, ray, angle, map) {
+        const ctx = this.ctx;
+        const texture = map.floorTexture;
+        const length = null;
+        const width = null;
+        // TODO
+      }
+
       Camera.prototype.drawColumn = function(column, ray, angle, map) {
         const ctx = this.ctx;
         const texture = map.wallTexture;
@@ -202,8 +211,8 @@
 
         for (let s = ray.length - 1; s >= 0; s--) {
           let step = ray[s];
-          let rainDrops = Math.pow(Math.random(), 3) * s;
-          let rain = (rainDrops > 0) && this.project(0.1, angle, step.distance);
+          // let rainDrops = Math.pow(Math.random(), 3) * s;
+          // let rain = (rainDrops > 0) && this.project(0.1, angle, step.distance);
 
           if (s === hit) {
             const textureX = Math.floor(texture.width * step.offset);
@@ -219,7 +228,7 @@
           
           ctx.fillStyle = '#ffffff';
           ctx.globalAlpha = 0.15;
-          //while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
+          // while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
         }
       };
 
