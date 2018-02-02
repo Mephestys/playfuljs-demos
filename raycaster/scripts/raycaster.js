@@ -1,6 +1,6 @@
 
-      var CIRCLE = Math.PI * 2;
-      var MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
+      const CIRCLE = Math.PI * 2;
+      const MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
 
       function Controls() {
         this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
@@ -13,7 +13,7 @@
       }
 
       Controls.prototype.onTouch = function(e) {
-        var t = e.touches[0];
+        const t = e.touches[0];
         this.onTouchEnd(e);
         if (t.pageY < window.innerHeight * 0.5) this.onKey(true, { keyCode: 38 });
         else if (t.pageX < window.innerWidth * 0.5) this.onKey(true, { keyCode: 37 });
@@ -27,7 +27,7 @@
       };
 
       Controls.prototype.onKey = function(val, e) {
-        var state = this.codes[e.keyCode];
+        const state = this.codes[e.keyCode];
         if (typeof state === 'undefined') return;
         this.states[state] = val;
         e.preventDefault && e.preventDefault();
@@ -54,8 +54,8 @@
       };
 
       Player.prototype.walk = function(distance, map) {
-        var dx = Math.cos(this.direction) * distance;
-        var dy = Math.sin(this.direction) * distance;
+        const dx = Math.cos(this.direction) * distance;
+        const dy = Math.sin(this.direction) * distance;
         if (map.get(this.x + dx, this.y) <= 0) this.x += dx;
         if (map.get(this.x, this.y + dy) <= 0) this.y += dy;
         this.paces += distance;
@@ -84,23 +84,23 @@
       };
 
       Map.prototype.randomize = function() {
-        for (var i = 0; i < this.size * this.size; i++) {
+        for (let i = 0; i < this.size * this.size; i++) {
           this.wallGrid[i] = Math.random() < 0.3 ? 1 : 0;
         }
       };
 
       Map.prototype.cast = function(point, angle, range) {
-        var self = this;
-        var sin = Math.sin(angle);
-        var cos = Math.cos(angle);
-        var noWall = { length2: Infinity };
+        const self = this;
+        const sin = Math.sin(angle);
+        const cos = Math.cos(angle);
+        const noWall = { length2: Infinity };
 
         return ray({ x: point.x, y: point.y, height: 0, distance: 0 });
 
         function ray(origin) {
-          var stepX = step(sin, cos, origin.x, origin.y);
-          var stepY = step(cos, sin, origin.y, origin.x, true);
-          var nextStep = stepX.length2 < stepY.length2
+          const stepX = step(sin, cos, origin.x, origin.y);
+          const stepY = step(cos, sin, origin.y, origin.x, true);
+          const nextStep = stepX.length2 < stepY.length2
             ? inspect(stepX, 1, 0, origin.distance, stepX.y)
             : inspect(stepY, 0, 1, origin.distance, stepY.x);
 
@@ -110,8 +110,8 @@
 
         function step(rise, run, x, y, inverted) {
           if (run === 0) return noWall;
-          var dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
-          var dy = dx * (rise / run);
+          const dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+          const dy = dx * (rise / run);
           return {
             x: inverted ? y + dy : x + dx,
             y: inverted ? x + dx : y + dy,
@@ -120,8 +120,8 @@
         }
 
         function inspect(step, shiftX, shiftY, distance, offset) {
-          var dx = cos < 0 ? shiftX : 0;
-          var dy = sin < 0 ? shiftY : 0;
+          const dx = cos < 0 ? shiftX : 0;
+          const dy = sin < 0 ? shiftY : 0;
           step.height = self.get(step.x - dx, step.y - dy);
           step.distance = distance + Math.sqrt(step.length2);
           if (shiftX) step.shading = cos < 0 ? 2 : 0;
@@ -155,8 +155,8 @@
       };
 
       Camera.prototype.drawSky = function(direction, sky, ambient) {
-        var width = sky.width * (this.height / sky.height) * 2;
-        var left = (direction / CIRCLE) * -width;
+        const width = sky.width * (this.height / sky.height) * 2;
+        const left = (direction / CIRCLE) * -width;
 
         this.ctx.save();
         this.ctx.drawImage(sky.image, left, 0, width, this.height);
@@ -173,40 +173,40 @@
 
       Camera.prototype.drawColumns = function(player, map) {
         this.ctx.save();
-        for (var column = 0; column < this.resolution; column++) {
-          var x = column / this.resolution - 0.5;
-          var angle = Math.atan2(x, this.focalLength);
-          var ray = map.cast(player, player.direction + angle, this.range);
+        for (let column = 0; column < this.resolution; column++) {
+          const x = column / this.resolution - 0.5;
+          const angle = Math.atan2(x, this.focalLength);
+          const ray = map.cast(player, player.direction + angle, this.range);
           this.drawColumn(column, ray, angle, map);
         }
         this.ctx.restore();
       };
 
       Camera.prototype.drawWeapon = function(weapon, paces) {
-        var bobX = Math.cos(paces * 2) * this.scale * 6;
-        var bobY = Math.sin(paces * 4) * this.scale * 6;
-        var left = this.width * 0.66 + bobX;
-        var top = this.height * 0.6 + bobY;
+        const bobX = Math.cos(paces * 2) * this.scale * 6;
+        const bobY = Math.sin(paces * 4) * this.scale * 6;
+        const left = this.width * 0.66 + bobX;
+        const top = this.height * 0.6 + bobY;
         this.ctx.drawImage(weapon.image, left, top, weapon.width * this.scale, weapon.height * this.scale);
       };
 
       Camera.prototype.drawColumn = function(column, ray, angle, map) {
-        var ctx = this.ctx;
-        var texture = map.wallTexture;
-        var left = Math.floor(column * this.spacing);
-        var width = Math.ceil(this.spacing);
-        var hit = -1;
+        const ctx = this.ctx;
+        const texture = map.wallTexture;
+        const left = Math.floor(column * this.spacing);
+        const width = Math.ceil(this.spacing);
+        let hit = -1;
 
         while (++hit < ray.length && ray[hit].height <= 0);
 
-        for (var s = ray.length - 1; s >= 0; s--) {
-          var step = ray[s];
-          var rainDrops = Math.pow(Math.random(), 3) * s;
-          var rain = (rainDrops > 0) && this.project(0.1, angle, step.distance);
+        for (let s = ray.length - 1; s >= 0; s--) {
+          let step = ray[s];
+          let rainDrops = Math.pow(Math.random(), 3) * s;
+          let rain = (rainDrops > 0) && this.project(0.1, angle, step.distance);
 
           if (s === hit) {
-            var textureX = Math.floor(texture.width * step.offset);
-            var wall = this.project(step.height, angle, step.distance);
+            const textureX = Math.floor(texture.width * step.offset);
+            const wall = this.project(step.height, angle, step.distance);
 
             ctx.globalAlpha = 1;
             ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
@@ -223,9 +223,9 @@
       };
 
       Camera.prototype.project = function(height, angle, distance) {
-        var z = distance * Math.cos(angle);
-        var wallHeight = this.height * height / z;
-        var bottom = this.height / 2 * (1 + 1 / z);
+        const z = distance * Math.cos(angle);
+        const wallHeight = this.height * height / z;
+        const bottom = this.height / 2 * (1 + 1 / z);
         return {
           top: bottom - wallHeight,
           height: wallHeight
@@ -244,18 +244,18 @@
       };
 
       GameLoop.prototype.frame = function(time) {
-        var seconds = (time - this.lastTime) / 1000;
+        let seconds = (time - this.lastTime) / 1000;
         this.lastTime = time;
         if (seconds < 0.2) this.callback(seconds);
         requestAnimationFrame(this.frame);
       };
 
-      var display = document.getElementById('display');
-      var player = new Player(15.3, -1.2, Math.PI * 0.3);
-      var map = new Map(32);
-      var controls = new Controls();
-      var camera = new Camera(display, MOBILE ? 160 : 320, 0.8);
-      var loop = new GameLoop();
+      const display = document.getElementById('display');
+      const player = new Player(15.3, -1.2, Math.PI * 0.3);
+      const map = new Map(32);
+      const controls = new Controls();
+      const camera = new Camera(display, MOBILE ? 160 : 320, 0.8);
+      const loop = new GameLoop();
 
       map.randomize();
       
