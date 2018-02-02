@@ -133,7 +133,7 @@
 
       Map.prototype.update = function(seconds) {
         if (this.light > 0) this.light = Math.max(this.light - 10 * seconds, 0);
-        else if (Math.random() * 5 < seconds) this.light = 2;
+        //else if (Math.random() * 5 < seconds) this.light = 2;
       };
 
       function Camera(canvas, resolution, focalLength) {
@@ -218,7 +218,7 @@
           
           ctx.fillStyle = '#ffffff';
           ctx.globalAlpha = 0.15;
-          while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
+          //while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
         }
       };
 
