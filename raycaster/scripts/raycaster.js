@@ -3,7 +3,7 @@
       const MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
 
       function Controls() {
-        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
+        this.codes  = { 16: 'run', 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
         this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
         document.addEventListener('keydown', this.onKey.bind(this, true), false);
         document.addEventListener('keyup', this.onKey.bind(this, false), false);
@@ -64,8 +64,9 @@
       Player.prototype.update = function(controls, map, seconds) {
         if (controls.left) this.rotate(-Math.PI * seconds);
         if (controls.right) this.rotate(Math.PI * seconds);
-        if (controls.forward) this.walk(3 * seconds, map);
-        if (controls.backward) this.walk(-3 * seconds, map);
+        if (controls.forward && !controls.run) this.walk(2 * seconds, map);
+        if (controls.backward) this.walk(-2 * seconds, map);
+        if (controls.run && controls.forward) this.walk(4 * seconds, map);
       };
 
       function Map(size) {
